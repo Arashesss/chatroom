@@ -1,0 +1,2 @@
+pattern_user = '^[\w0-9]{4,}'
+pattern_email = '([a-zA-Z0-9][\w-.]{2,}@\w{2,}\.[a-zA-Z0-9-.]+$)'

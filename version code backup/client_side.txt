@@ -1,0 +1,81 @@
+from PyQt5.QtWidgets import QApplication, QMessageBox
+from PyQt5.uic import loadUi
+import sys
+import rpyc
+
+
+
+
+def register():
+    username = register_ui.username_field.text()
+    email = register_ui.email_field.text()
+    pass1 = register_ui.password1_field.text()
+    pass2 = register_ui.password2_field.text()
+    if pass1 == pass2:
+        result = services.register(username, email, pass1)
+        if result:
+            message = QMessageBox()
+            message.setText('Registered successfully')
+            message.setIcon(QMessageBox.Information)
+            message.exec()
+            register_ui.close()
+
+        else:
+            message = QMessageBox()
+            message.setText('Error in registration, please try later')
+            message.setIcon(QMessageBox.Warning)
+            message.exec()
+    else:
+        message = QMessageBox()
+        message.setText('passwords do not match')
+        message.setIcon(QMessageBox.Warning)
+        message.exec()
+
+
+def login():
+    username = login_ui.username_field.text()
+    password = login_ui.password_field.text()
+    result = services.login(username, password)
+    if result:
+        chat_ui.show()
+        login_ui.close()
+
+    if result is None :
+        message = QMessageBox()
+        message.setText('user or pass is incorrect/unvalid verify')
+        message.setIcon(QMessageBox.Warning)
+        message.exec()
+
+    if result is False:
+        verifycheck_ui.show()
+
+
+def verify():
+    username = login_ui.username_field.text()
+    verify_code = verifycheck_ui.verify_check.text()
+    result_check = services.verify(username , verify_code)
+    if result_check:
+        message = QMessageBox()
+        message.setText('Verify Successfully Please Login Again')
+        message.setIcon(QMessageBox.Information)
+        message.exec()
+        verifycheck_ui.close()
+    else:
+        message = QMessageBox()
+        message.setText('verify code is not valid')
+        message.setIcon(QMessageBox.Warning)
+        message.exec()
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    login_ui = loadUi('views/login.ui')
+    register_ui = loadUi('views/register.ui')
+    chat_ui = loadUi('views/chat-room.ui')
+    verifycheck_ui = loadUi('views/verifycheck.ui')
+    login_ui.register_btn.clicked.connect(lambda: register_ui.show())
+    login_ui.login_btn.clicked.connect(login)
+    register_ui.pushButton.clicked.connect(register)
+    verifycheck_ui.verifycheck_btn.clicked.connect(verify)
+    login_ui.show()
+    services = rpyc.connect('localhost', port=1234).root
+    app.exec()
