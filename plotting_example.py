@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 import numpy
-fig, axes = plt.subplots(2, 1)
+fig, axes = plt.subplots(2, 2)
 
 x = numpy.linspace(0, 100, 20)
 y = x**2
